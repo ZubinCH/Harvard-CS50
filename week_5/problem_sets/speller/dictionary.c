@@ -7,16 +7,7 @@
 
 #include "dictionary.h"
 
-const unsigned int N = 26;
 unsigned int dict_words = 0;
-
-// Represents a node in a trie
-typedef struct node
-{
-    struct node *next[HASH_LENGTH];
-    bool *has_char;
-    bool *is_end_of_word;
-} node;
 
 
 // Trie
@@ -26,35 +17,46 @@ node *root;
 // Returns true if word is in dictionary, else false
 bool check(const char *word) {
     node *sequencing_node = root;
-    for (int i = 0; word[i] != '\n'; i++) {
 
-        /* 
-        
-        hash char
+    for (int i = 0; word[i] != '\0'; i++) {
+        unsigned int hashed_char = hash(word[i]);
 
-        IF trie->next[hash] has_char
-            sequencing_node = sequencing_node->next[hash]
-        ENDIF
-
-        ELSE
-            return false
-        END ELSE
-
-        
-
-
-        */
-
-
+        if (sequencing_node->next[hashed_char] && 
+            sequencing_node->next[hashed_char]->has_char)
+            sequencing_node = sequencing_node->next[hashed_char];
+        else return false;
     }
 
 
-    return false;
+    return (sequencing_node && sequencing_node->is_end_of_word);
+
+
+
+    /* 
+        
+        WHILE reading word
+            hash char
+
+            IF sequencing_node->next[hash] && sequencing_node->next[hash] has_char
+                sequencing_node = sequencing_node->next[hash]
+            ENDIF
+
+            ELSE
+                RETURN false
+            END ELSE
+
+        END WHILE
+
+        RETURN (sequencing_node && is end of word)
+    
+
+        */
+
 }
 
 // Hashes word to a number
-unsigned int hash(const char *word) {
-    return (word[0] == '\'') ? HASH_LENGTH - 1 : toupper(word[0]) - 'A';
+unsigned int hash(const char word) {
+    return (word == '\'') ? HASH_LENGTH - 1 : toupper(word) - 'A';
 }
 
 // Loads dictionary into memory, returning true if successful, else false
@@ -66,13 +68,8 @@ bool load(const char *dictionary) {
         printf("Could not allocate memory.\n");
         return false;
     }
-    root->has_char = malloc(sizeof(bool));
-    root->is_end_of_word = calloc(1, sizeof(bool));
-    if (!root->has_char || !root->is_end_of_word) {
-        printf("Memory allocation failed.\n");
-        return false;
-    }
     root->has_char = true;
+    root->is_end_of_word = false;
 
     root = create_trie_layer(root);
     if (!root) {
@@ -99,7 +96,7 @@ bool load(const char *dictionary) {
         unsigned int hashed_value = hash(b);
 
         // Check if word ended
-        if (b == '\n') {
+        if (b == '\0') {
             dict_words++;
             sequence_node->is_end_of_word = true;
             sequence_node = root;
@@ -124,7 +121,7 @@ bool load(const char *dictionary) {
 
 
     /*
-        IF b == \n:
+        IF b == 0:
             dict_words++
             go to root hash table
             continue
@@ -170,20 +167,13 @@ void free_nodes(node *sequencing_node) {
             }
 
             else {
-                free_self_node(sequencing_node->next[i]);
+                free(sequencing_node->next[i]);
             }
         }
     }
 
-    free_self_node(sequencing_node);
+    free(sequencing_node);
 }
-
-void free_self_node (node *no_next) {
-    free(no_next->has_char);
-    free(no_next->is_end_of_word);
-    free(no_next);
-}
-
 
 node *create_trie_layer(node *curr) {
     for (int i = 0; i < HASH_LENGTH; i++) {
@@ -192,16 +182,8 @@ node *create_trie_layer(node *curr) {
             printf("Memory allocation failed.\n");
             return NULL;
         }
-        curr->next[i]->has_char = calloc(1, sizeof(bool));
-        curr->next[i]->is_end_of_word = calloc(1, sizeof(bool));
-        
-        if (!curr->next[i]->has_char || 
-            !curr->next[i]->is_end_of_word) {
-            printf("Memory allocation failed.\n");
-            return NULL;
-        }
-
-
+        curr->next[i]->has_char = false;
+        curr->next[i]->is_end_of_word = false;
     }
 
     return curr;

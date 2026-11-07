@@ -10,9 +10,17 @@
 #define LENGTH 45
 #define HASH_LENGTH 27
 
+// Represents a node in a trie
+typedef struct node
+{
+    struct node *next[HASH_LENGTH];
+    bool has_char;
+    bool is_end_of_word;
+} node;
+
 // Prototypes
 bool check(const char *word);
-unsigned int hash(const char *word);
+unsigned int hash(const char word);
 bool load(const char *dictionary);
 unsigned int size(void);
 bool unload(void);
@@ -20,7 +28,6 @@ bool unload(void);
 // Helper prototypes
 node *create_trie_layer(node *curr);
 void free_nodes(node *sequencing_node);
-void free_self_node (node *no_next);
 
 
 
