@@ -70,12 +70,7 @@ bool load(const char *dictionary) {
     }
     root->has_char = true;
     root->is_end_of_word = false;
-
-    root = create_trie_layer(root);
-    if (!root) {
-        printf("Memory allocation failed.\n");
-        return false;
-    }
+    create_trie_layer(root);
 
     // Set sequence root equal to root
     node *sequence_node = root;
@@ -96,20 +91,24 @@ bool load(const char *dictionary) {
         unsigned int hashed_value = hash(b);
 
         // Check if word ended
-        if (b == '\0') {
+        if (b == '\n') {
             dict_words++;
             sequence_node->is_end_of_word = true;
             sequence_node = root;
         }
 
         // if character already exists in node
-        else if (sequence_node->next[hashed_value]->has_char == true) {
+        else if (sequence_node->next[hashed_value] && sequence_node->next[hashed_value]->has_char) {
             sequence_node = sequence_node->next[hashed_value];
         }
 
         // else if character doesn't exist and new layer must be created
         else {
-            sequence_node->next[hashed_value] = create_trie_layer(sequence_node->next[hashed_value]);
+                sequence_node->next[hashed_value] = malloc_node(sequence_node->next[hashed_value]);
+                if (!sequence_node->next[hashed_value]) {
+                    printf("Memory allocation failed.\n");
+                    return false;
+                }
             sequence_node->next[hashed_value]->has_char = true;
             sequence_node = sequence_node->next[hashed_value];
         }
@@ -152,7 +151,7 @@ unsigned int size(void)
 // Unloads dictionary from memory, returning true if successful, else false
 bool unload(void) {
     free_nodes(root);
-    if (root) return false;
+    if (!root) return false;
 
     return true;
 }
@@ -161,32 +160,30 @@ void free_nodes(node *sequencing_node) {
     if (!sequencing_node) return;
 
     for (int i = 0; i < HASH_LENGTH; i++) {
-        if (sequencing_node->next[i]) {
-            if (sequencing_node->next[i]->has_char) {
-                free_nodes(sequencing_node->next[i]);
-            }
-
-            else {
-                free(sequencing_node->next[i]);
-            }
+        if (sequencing_node->next[i] && sequencing_node->next[i]->has_char) {
+            free_nodes(sequencing_node->next[i]);
         }
     }
 
     free(sequencing_node);
 }
 
-node *create_trie_layer(node *curr) {
+void create_trie_layer(node *curr) {
     for (int i = 0; i < HASH_LENGTH; i++) {
-        curr->next[i] = malloc(sizeof(node));
-        if (!curr->next[i]) {
-            printf("Memory allocation failed.\n");
-            return NULL;
-        }
-        curr->next[i]->has_char = false;
-        curr->next[i]->is_end_of_word = false;
+        curr->next[i] = NULL;
     }
 
+    return;
+}
+
+node *malloc_node(node *curr) {
+    curr = malloc(sizeof(node));
+    if (!curr) return NULL;
+    curr->has_char = false;
+    curr->is_end_of_word = false;
+    create_trie_layer(curr);
     return curr;
 }
+
 
 

@@ -26,8 +26,9 @@ unsigned int size(void);
 bool unload(void);
 
 // Helper prototypes
-node *create_trie_layer(node *curr);
+void create_trie_layer(node *curr);
 void free_nodes(node *sequencing_node);
+node *malloc_node(node *curr);
 
 
 
