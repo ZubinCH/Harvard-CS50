@@ -10,11 +10,11 @@
 const unsigned int N = 26;
 unsigned int dict_words = 0;
 
-// Represents a node in a hash table
+// Represents a node in a trie
 typedef struct node
 {
-    struct node *next;
-    bool *contains_word;
+    struct node *next[HASH_LENGTH];
+    bool *has_char;
     bool *is_end_of_word;
 } node;
 
@@ -36,8 +36,8 @@ typedef struct node
 */
 
 
-// Hash table
-node *root[HASH_LENGTH];
+// Trie
+node *root;
 
 
 // Returns true if word is in dictionary, else false
@@ -55,30 +55,56 @@ unsigned int hash(const char *word) {
 
 // Loads dictionary into memory, returning true if successful, else false
 bool load(const char *dictionary) {
+    root = calloc(1, sizeof(node));
+    if (!root) {
+        printf("Could not allocate memory.\n");
+        return false;
+    }
+    root->has_char = true;
+
+    root = create_trie_layer(root);
+    if (!root) {
+        printf("Memory allocation failed.\n");
+        return false;
+    }
+
+    node *sequence_node = root;
+
+
     FILE *dict = fopen(dictionary, "r");
     if (!dict) {
         printf("Could not open %s.\n", dictionary);
         return false;
     }
 
-    for (int i = 0; i < HASH_LENGTH; i++) {
-        root[i]->next = malloc(sizeof(node));
-        if (!root[i]->next) {
-            printf("Failed to allocate memory.\n");
-            return false;
-        }
-    }
 
     char word[LENGTH + 1];
     char b;
     int i = 0;
 
     while (fread(&b, sizeof(char), 1, dict)) {
+        // Check if word ended
         if (b == '\n') {
             dict_words++;
-            // create function to go to root 
+            sequence_node->is_end_of_word = true;
+            sequence_node = root;
             continue;
         }
+
+        // hash function
+        unsigned int hashed_value = hash(b);
+        
+
+        // if character already exists in node
+        if (sequence_node->next[hashed_value]->has_char == true) {
+            sequence_node = sequence_node->next[hashed_value];
+            continue;
+        }
+
+        // else if character doesn't exist and new layer must be created
+        sequence_node->next[hashed_value] = create_trie_layer(sequence_node->next[hashed_value]);
+        sequence_node->next[hashed_value]->has_char = true;
+        sequence_node = sequence_node->next[hashed_value];
 
     }
 
@@ -103,10 +129,17 @@ bool unload(void)
     return false;
 }
 
-bool create_trie_layer(node *curr) {
-    curr->next = calloc(HASH_LENGTH, sizeof(node));
-    if (curr->next != NULL) return false;
-    return true;
+node *create_trie_layer(node *curr) {
+    for (int i = 0; i < HASH_LENGTH; i++) {
+        curr->next[i] = calloc(1, sizeof(node));
+        if (!curr->next[i]) {
+            printf("Memory allocation failed.\n");
+            return NULL;
+        }
+
+    }
+
+    return curr;
 }
 
 
