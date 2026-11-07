@@ -16,7 +16,11 @@ unsigned int hash(const char *word);
 bool load(const char *dictionary);
 unsigned int size(void);
 bool unload(void);
+
+// Helper prototypes
 node *create_trie_layer(node *curr);
+void free_nodes(node *sequencing_node);
+void free_self_node (node *no_next);
 
 
 
