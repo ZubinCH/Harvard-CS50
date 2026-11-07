@@ -19,23 +19,6 @@ typedef struct node
 } node;
 
 
-/*
-    if b == \n:
-        dict_words++
-        go to root hash table
-        continue
-    hash b
-    if trie already has a value
-        go to next
-    else
-        root[b]->next 
-    store the result in the trie
-
-
-
-*/
-
-
 // Trie
 node *root;
 
@@ -55,9 +38,17 @@ unsigned int hash(const char *word) {
 
 // Loads dictionary into memory, returning true if successful, else false
 bool load(const char *dictionary) {
+
+    // Initialise root of trie and create next layer
     root = calloc(1, sizeof(node));
     if (!root) {
         printf("Could not allocate memory.\n");
+        return false;
+    }
+    root->has_char = malloc(sizeof(bool));
+    root->is_end_of_word = calloc(1, sizeof(bool));
+    if (!root->has_char || !root->is_end_of_word) {
+        printf("Memory allocation failed.\n");
         return false;
     }
     root->has_char = true;
@@ -68,66 +59,111 @@ bool load(const char *dictionary) {
         return false;
     }
 
+    // Set sequence root equal to root
     node *sequence_node = root;
 
 
+    // open dictionary file
     FILE *dict = fopen(dictionary, "r");
     if (!dict) {
         printf("Could not open %s.\n", dictionary);
         return false;
     }
 
-
-    char word[LENGTH + 1];
+    // Read byte for byte
     char b;
-    int i = 0;
 
     while (fread(&b, sizeof(char), 1, dict)) {
+        // hash function
+        unsigned int hashed_value = hash(b);
+
         // Check if word ended
         if (b == '\n') {
             dict_words++;
             sequence_node->is_end_of_word = true;
             sequence_node = root;
-            continue;
         }
 
-        // hash function
-        unsigned int hashed_value = hash(b);
-        
-
         // if character already exists in node
-        if (sequence_node->next[hashed_value]->has_char == true) {
+        else if (sequence_node->next[hashed_value]->has_char == true) {
             sequence_node = sequence_node->next[hashed_value];
-            continue;
         }
 
         // else if character doesn't exist and new layer must be created
-        sequence_node->next[hashed_value] = create_trie_layer(sequence_node->next[hashed_value]);
-        sequence_node->next[hashed_value]->has_char = true;
-        sequence_node = sequence_node->next[hashed_value];
+        else {
+            sequence_node->next[hashed_value] = create_trie_layer(sequence_node->next[hashed_value]);
+            sequence_node->next[hashed_value]->has_char = true;
+            sequence_node = sequence_node->next[hashed_value];
+        }
 
     }
 
 
+    return true;
+
+
+    /*
+        IF b == \n:
+            dict_words++
+            go to root hash table
+            continue
+        ENDIF
+
+        hash b
+
+        IF node in layer already has a value
+            go to next
+            continue
+        ENDIF
+        
+        allocate memory for next node layer
+        store the result in the trie
+        go to next
 
 
 
-    return false;
+    */
 }
 
 // Returns number of words in dictionary if loaded, else 0 if not yet loaded
 unsigned int size(void)
 {
-
-    return 0;
+    return dict_words;
 }
 
 // Unloads dictionary from memory, returning true if successful, else false
 bool unload(void)
 {
-    // TODO
+    node *sequencing_node = root;
+    bool empty_node = false;
+    for (int i = 0; i < HASH_LENGTH; i++) {
+        if (!sequencing_node->next[i]->has_char) {
+            free(sequencing_node->next[i]->has_char);
+            free(sequencing_node->next[i]->is_end_of_word);
+            free(sequencing_node->next[i]);
+        }
+        
+
+    }
+
     return false;
+    /*
+    
+    if (!sequencing_node->next[i]) {
+        free sequencing_node's booleans
+        tmp = sequencing_node
+    free
+    
+    
+    */
 }
+
+node *free_nodes(node *snode) {
+    
+
+
+}
+
 
 node *create_trie_layer(node *curr) {
     for (int i = 0; i < HASH_LENGTH; i++) {
@@ -136,6 +172,15 @@ node *create_trie_layer(node *curr) {
             printf("Memory allocation failed.\n");
             return NULL;
         }
+        curr->next[i]->has_char = calloc(1, sizeof(bool));
+        curr->next[i]->is_end_of_word = calloc(1, sizeof(bool));
+        
+        if (!curr->next[i]->has_char || 
+            !curr->next[i]->is_end_of_word) {
+            printf("Memory allocation failed.\n");
+            return NULL;
+        }
+
 
     }
 
