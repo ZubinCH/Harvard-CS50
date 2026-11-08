@@ -21,8 +21,7 @@ bool check(const char *word) {
     for (int i = 0; word[i] != '\0'; i++) {
         unsigned int hashed_char = hash(word[i]);
 
-        if (sequencing_node->next[hashed_char] && 
-            sequencing_node->next[hashed_char]->has_char)
+        if (sequencing_node->next[hashed_char])
             sequencing_node = sequencing_node->next[hashed_char];
         else return false;
     }
@@ -61,27 +60,25 @@ unsigned int hash(const char word) {
 
 // Loads dictionary into memory, returning true if successful, else false
 bool load(const char *dictionary) {
-
-    // Initialise root of trie and create next layer
-    root = malloc(sizeof(node));
-    if (!root) {
-        printf("Could not allocate memory.\n");
-        return false;
-    }
-    root->has_char = true;
-    root->is_end_of_word = false;
-    create_trie_layer(root);
-
-    // Set sequence root equal to root
-    node *sequence_node = root;
-
-
     // open dictionary file
     FILE *dict = fopen(dictionary, "r");
     if (!dict) {
         printf("Could not open %s.\n", dictionary);
         return false;
     }
+
+    // Initialise root of trie and create next layer
+    root = malloc(sizeof(node));
+    if (!root) {
+        printf("Could not allocate memory.\n");
+        fclose(dict);
+        return false;
+    }
+    root->is_end_of_word = false;
+    create_trie_layer(root);
+
+    // Set sequence root equal to root
+    node *sequence_node = root;
 
     // Read byte for byte
     char b;
@@ -98,7 +95,7 @@ bool load(const char *dictionary) {
         }
 
         // if character already exists in node
-        else if (sequence_node->next[hashed_value] && sequence_node->next[hashed_value]->has_char) {
+        else if (sequence_node->next[hashed_value]) {
             sequence_node = sequence_node->next[hashed_value];
         }
 
@@ -109,7 +106,6 @@ bool load(const char *dictionary) {
                     printf("Memory allocation failed.\n");
                     return false;
                 }
-            sequence_node->next[hashed_value]->has_char = true;
             sequence_node = sequence_node->next[hashed_value];
         }
 
@@ -160,7 +156,7 @@ void free_nodes(node *sequencing_node) {
     if (!sequencing_node) return;
 
     for (int i = 0; i < HASH_LENGTH; i++) {
-        if (sequencing_node->next[i] && sequencing_node->next[i]->has_char) {
+        if (sequencing_node->next[i]) {
             free_nodes(sequencing_node->next[i]);
         }
     }
@@ -179,7 +175,6 @@ void create_trie_layer(node *curr) {
 node *malloc_node(node *curr) {
     curr = malloc(sizeof(node));
     if (!curr) return NULL;
-    curr->has_char = false;
     curr->is_end_of_word = false;
     create_trie_layer(curr);
     return curr;

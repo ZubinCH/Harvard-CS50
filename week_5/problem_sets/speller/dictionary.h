@@ -14,7 +14,6 @@
 typedef struct node
 {
     struct node *next[HASH_LENGTH];
-    bool has_char;
     bool is_end_of_word;
 } node;
 
