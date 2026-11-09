@@ -13,14 +13,14 @@ int main(int argc, char *argv[]) {
     }
 
     FILE *input = fopen(argv[1], "rb");
-    if (!input) { 
+    if (!input) {
         printf("Failed to open input file.\n");
         return 1;
     }
 
     int n = 0;
     char filename[FILE_NAME_LENGTH];
-    BYTE bf[512];
+    BYTE bf[BLOCK_SIZE];
     FILE *img = NULL;
 
     while (fread(bf, 1, BLOCK_SIZE, input) == BLOCK_SIZE) {
