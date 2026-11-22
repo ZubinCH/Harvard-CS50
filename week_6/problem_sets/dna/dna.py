@@ -12,22 +12,43 @@ def main():
     # TODO: Read database file into a variable
     database_rows = []
 
-    with open(sys.argv[1]) as database:
+    with open(sys.argv[1], "r", encoding="utf-8-sig") as database:
         database_dict = csv.DictReader(database)
+        database_subsequences = database_dict.fieldnames[1:]
         for row in database_dict:
             database_rows.append(row)
 
     # TODO: Read DNA sequence file into a variable
-    sequence = open(sys.argv[2], 'r')
-
-    
+    with open(sys.argv[2], "r") as sequence_file:
+        sequence = sequence_file.read().strip()
 
     # TODO: Find longest match of each STR in DNA sequence
-
+    subsequence_counts = []
+    for subsequence in database_subsequences:
+        subsequence_counts.append(longest_match(sequence, subsequence))
 
     # TODO: Check database for matching profiles
+    person_found = False
+    for person in database_rows:
+        i = 0
+        is_person = True
 
-    sequence.close()
+        while (is_person and i < len(database_subsequences)):
+            if int(person[database_subsequences[i]]) != subsequence_counts[i]:
+                is_person = False
+                break
+            i += 1
+
+        if i == len(database_subsequences) and is_person:
+            print(person["name"])
+            person_found = True
+
+
+    if not person_found:
+        print("No match")
+        
+
+
     return
 
 
