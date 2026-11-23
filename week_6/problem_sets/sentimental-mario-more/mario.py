@@ -1,10 +1,13 @@
 
 
 def main():
-    while True:
-        height = int(input("Height: "))
-        if height > 0 and height < 9:
-            break
+    height = -5
+    while height <= 0 or height >= 9:
+        height = input("Height: ")
+        if height.isnumeric():
+            height = int(height)
+        else:
+            height = -5
 
 
     for i in range(1, height + 1):
