@@ -24,6 +24,11 @@
 !**/*.png
 !**/*.gz
 !**/*.wav
+!**/*.sql
 !**/*.csv
 !**/*/Makefile
-!**/*.db
+
+
+# Custom file non ignores
+!**/*/favs.db
+
