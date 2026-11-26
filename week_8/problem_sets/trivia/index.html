@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section" id="partA">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+
+                <h3>Which planet has the shortest day in our Solar system?</h3>
+                <button>Neptune</button>
+                <button>Mercury</button>
+                <button>Jupiter</button>
+                <button>Mars</button>
+
+            </div>
+
+            <div class="section" id="partB">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <!-- TODO: Add free response question here -->
+            </div>
+        </div>
+
+
+        <script>
+            // TODO: Add code to check answers to questions
+
+            const partA = document.getElementById('partA');
+
+
+            partA.addEventListener('click', (event) => {
+                let solved = 0;
+                const button = event.target.closest('button');
+
+                if (!button) return;
+
+                if (button.textContent === 'Jupiter') {
+                    button.style.backgroundColor = 'green';
+                    solved = 2;
+
+                }
+                else {
+                    button.style.backgroundColor = 'red';
+                    solved = 1;
+                }
+                
+                switch (solved) {
+                    case 1:
+
+
+                    case 2:
+
+                    default:
+
+
+                }
+
+
+            });
+
+
+        </script>
+    </body>
+</html>
