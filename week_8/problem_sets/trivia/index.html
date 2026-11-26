@@ -22,6 +22,7 @@
                 <button>Mercury</button>
                 <button>Jupiter</button>
                 <button>Mars</button>
+                <p></p>
 
             </div>
 
@@ -29,6 +30,12 @@
                 <h2>Part 2: Free Response</h2>
                 <hr>
                 <!-- TODO: Add free response question here -->
+                 <form>
+                    <h3>What is the capital city of France?</h3>
+                    <input type="text" placeholder="Type" autocomplete="off">
+                    <input type="submit" id="submitted">
+
+                 </form>
             </div>
         </div>
 
@@ -37,36 +44,22 @@
             // TODO: Add code to check answers to questions
 
             const partA = document.getElementById('partA');
-
-
             partA.addEventListener('click', (event) => {
-                let solved = 0;
+                html = ``;
                 const button = event.target.closest('button');
 
                 if (!button) return;
 
                 if (button.textContent === 'Jupiter') {
                     button.style.backgroundColor = 'green';
-                    solved = 2;
-
+                    html = `Correct!`;
                 }
                 else {
                     button.style.backgroundColor = 'red';
-                    solved = 1;
+                    html = `Incorrect`;
                 }
-                
-                switch (solved) {
-                    case 1:
-
-
-                    case 2:
-
-                    default:
-
-
-                }
-
-
+    
+                partA.querySelector('p').textContent = html;
             });
 
 
