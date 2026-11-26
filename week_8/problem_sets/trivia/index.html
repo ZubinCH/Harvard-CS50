@@ -33,9 +33,9 @@
                  <form>
                     <h3>What is the capital city of France?</h3>
                     <input type="text" placeholder="Type" autocomplete="off">
-                    <input type="submit" id="submitted">
-
+                    <input type="submit">
                  </form>
+                 <p></p>
             </div>
         </div>
 
@@ -60,6 +60,23 @@
                 }
     
                 partA.querySelector('p').textContent = html;
+            });
+
+            const partB = document.getElementById('partB');
+            partB.querySelector('form').addEventListener('submit', function(event) {
+                event.preventDefault();
+    
+                let answer = document.querySelector('input[type="text"').value.trim().toLowerCase();
+                let html = ``;
+                if (answer === 'paris') {
+                    html = `Correct!`;
+                }
+                else {
+                    html = `Incorrect`;
+                }
+
+                partB.querySelector('p').textContent = html;
+
             });
 
 
