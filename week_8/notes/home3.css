@@ -1,0 +1,16 @@
+.centred {
+    text-align: center;
+
+}
+
+header {
+    font-size: large;
+}
+
+main {
+    font-size: medium;
+}
+
+footer {
+    font-size: small;
+}

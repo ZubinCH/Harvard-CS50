@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Font with Changing Colour</title>
+    </head>
+
+    <body>
+        <h1 class="crazy_head">Crazy Horse</h1>
+
+        <button id="red" style="background-color: red;">Red++</button>
+        <button id="green" style="background-color: green;">Green++</button>
+        <button id="blue" style="background-color: blue;">Blue++</button>
+        <br>
+        <br>
+        <button id="red_down" style="background-color: red;">Red-- </button>
+        <button id="green_down" style="background-color: green;">Green-- </button>
+        <button id="blue_down" style="background-color: blue;">Blue-- </button>
+
+
+        <script>
+            let header_t = document.querySelector('.crazy_head');
+            let red = 200;
+            let green = 0;
+            let blue = 0;
+
+            header_t.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+
+            document.querySelector('#red').addEventListener('click', function() {
+                red += 20;
+                header_t.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+            });
+            document.querySelector('#green').addEventListener('click', function() {
+                green += 20;
+                header_t.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+
+            });
+            document.querySelector('#blue').addEventListener('click', function() {
+                blue += 20;
+                header_t.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+
+            });
+
+            document.querySelector('#red_down').addEventListener('click', function() {
+                red -= 20;
+                header_t.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+            });
+            document.querySelector('#green_down').addEventListener('click', function() {
+                green -= 20;
+                header_t.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+
+            });
+            document.querySelector('#blue_down').addEventListener('click', function() {
+                blue -= 20;
+                header_t.style.backgroundColor = `rgb(${red}, ${green}, ${blue})`;
+
+            });
+
+        </script>
+
+    </body>
+
+
+</html>
