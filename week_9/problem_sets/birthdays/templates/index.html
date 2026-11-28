@@ -17,6 +17,23 @@
                 <h2 style="font-family: sans-serif; color: #fff;"><strong>Add a birthday</strong></h2>
                 <!-- TODO: Create a form for users to submit a name, a month, and a day -->
                  <form action="/" method="POST" style="text-align: left;">
+                    {% if not has_name %}
+                        <div class="alert alert-danger alert-dismissible fade show row" role="alert">
+                            <div class="col">
+                                <strong>Name field empty!</strong> Enter a valid name.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if not has_valid_date %}
+                        <div class="alert alert-danger alert-dismissible fade show row" role="alert">
+                            <div class="col">
+                                <strong>Invalid date!</strong> Enter a valid month and day
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endif %}
                     <div class="row">
                         <div class="col mb-3">
                             <label for="name_input" class="form-label">Enter a name</label>

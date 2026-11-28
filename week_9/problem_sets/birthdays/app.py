@@ -3,7 +3,7 @@ import os
 from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, url_for
 
-MONTH = ["January", "February", "March", "April", "May", "June", "July", "September", "October", "November", "December"]
+MONTH = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 DAYS_PER_MONTH = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 # Configure application
@@ -29,22 +29,32 @@ def after_request(response):
 def index():
     if request.method == "POST":
 
-        # TODO: Add the user's entry into the database
+        # Add the user's entry into the database
         name = request.form.get("name")
-        month = int(request.form.get("month"))
-        day = int(request.form.get("day"))
+        try:
+            month = int(request.form.get("month"))
+            day = int(request.form.get("day"))
+        except (ValueError, TypeError):
+            month = 0
+            day = 0
+    
 
-        if not month > len(MONTH) and not day > DAYS_PER_MONTH[month - 1]:
-            db.execute("INSERT INTO birthdays (name, month, day) VALUES(?, ?, ?)", name, month, day)
+        has_name = True if name else False
+        has_valid_date = 0 < month <= 12 and 0 < day <= DAYS_PER_MONTH[month - 1]
 
-        return redirect('/')
+        if has_name and has_valid_date:
+            db.execute("INSERT INTO birthdays (name, month, day) VALUES(?, ?, ?)", name.strip(), month, day)
+            return redirect('/')
+
+        birthdays = db.execute("SELECT * FROM birthdays")
+        return render_template("index.html", has_name=has_name, has_valid_date=has_valid_date, birthdays=birthdays, MONTH=MONTH)
 
     else:
 
-        # TODO: Display the entries in the database on index.html
+        # Display the entries in the database on index.html
         birthdays = db.execute("SELECT * FROM birthdays")
 
-        return render_template("index.html", birthdays=birthdays, MONTH=MONTH)
+        return render_template("index.html", has_name=True, has_valid_date=True, birthdays=birthdays, MONTH=MONTH)
 
 @app.route("/remove", methods=["POST"])
 def remove():
